@@ -1,0 +1,30 @@
+# Определение сервисов приложения
+services:
+    web:
+      build: ./web  # Указание на директорию c Dockerfile для сборки образа            
+      ports:
+        - '5000:5000'  # Переадресация порта 5000 хоста на порт 5000 контейнера
+      depends_on:
+        - db  # Зависимость от сервиса db
+      networks:
+        - app-network  # Подключение к сети app-network
+    db:
+      image: mongo:4.4  # Используемый образ MongoDB версии 4.4
+      volumes:
+        - db-data:/data/db  # Подключение тома db-data к директории /data/db в контейнере
+      networks:
+        - app-network
+    prometheus:
+      image: prom/prometheus  # Используемый образ Prometheus
+      ports:
+        - '9090:9090'  # Переадресация порта 9090
+      volumes:
+        - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml  #Подключение файла конфигурации
+      networks:
+        - app-network
+    # Определение томов для хранения данных
+    volumes:
+      db-data:  # Том для данных MongoDB
+    # Определение пользовательской сети
+    networks:
+      app-network:
